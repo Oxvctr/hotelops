@@ -576,7 +576,7 @@ function patchRoomCard(rNum, room) {
   room.charges.forEach(c => {
     if (c.status === 'Confirmed' || c.status === 'Pending') totalCost += c.amount;
   });
-  if (cost) cost.textContent = totalCost > 0 ? '$' + totalCost : '--';
+  if (cost) cost.textContent = totalCost > 0 ? '₦' + totalCost : '--';
   
   // Update pulse indicator
   if (pulse) {
@@ -736,7 +736,7 @@ function renderRoomsView(container) {
       </div>
       <div class="card-footer">
         <span class="room-timer" data-start="${room.timer_start || ''}">${room.timer_start ? formatTimer(Date.now() - room.timer_start) : '--:--:--'}</span>
-        <span class="room-cost">${cost > 0 ? '$' + cost : '--'}</span>
+        <span class="room-cost">${cost > 0 ? '₦' + cost : '--'}</span>
       </div>
     `;
 
@@ -836,7 +836,7 @@ function renderRoomDetailContent() {
     }
   });
 
-  document.getElementById('detail-room-cost').innerText = cost > 0 ? `$${cost}` : '$0';
+  document.getElementById('detail-room-cost').innerText = cost > 0 ? `₦${cost}` : '₦0';
   document.getElementById('detail-room-timer').innerText = room.timer_start ? formatTimer(Date.now() - room.timer_start) : '00:00:00';
   document.getElementById('detail-room-timer').dataset.start = room.timer_start || '';
 
@@ -887,12 +887,12 @@ function renderRoomDetailContent() {
       if (c.status === 'Confirmed') {
         logs.push({
           time: new Date(c.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          desc: `Added charge: ${c.type} (+$${c.amount}) by ${c.created_by}`
+          desc: `Added charge: ${c.type} (+₦${c.amount}) by ${c.created_by}`
         });
       } else if (c.status === 'Voided') {
         logs.push({
           time: new Date(c.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          desc: `Voided charge: ${c.type} ($${c.amount}) - Reason: ${c.void_reason}`
+          desc: `Voided charge: ${c.type} (₦${c.amount}) - Reason: ${c.void_reason}`
         });
       }
     });
@@ -927,7 +927,7 @@ function renderRoomDetailContent() {
       banner.className = 'pending-banner';
       banner.innerHTML = `
         <div>
-          <span>Pending ${p.type} ($${p.amount}) expires in: </span>
+          <span>Pending ${p.type} (₦${p.amount}) expires in: </span>
           <span class="pending-timer-val" id="countdown-${p.chargeId}">--:--</span>
         </div>
         <div class="pending-actions">
@@ -968,7 +968,7 @@ function renderRoomDetailContent() {
         <div style="display:flex; align-items:center;">
           ${checkbox}
           <div style="flex:1;">
-            <h4 style="font-weight:400; color:#fff;">+$${c.amount} ${c.type}</h4>
+            <h4 style="font-weight:400; color:#fff;">+₦${c.amount} ${c.type}</h4>
             <p style="font-size:12px; color: var(--text-muted); margin-top:2px;">
               ${new Date(c.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})} • by ${c.created_by}
             </p>
@@ -1334,7 +1334,7 @@ window.triggerVoidCharge = async (roomId, chargeId, originalAmount, originalType
   await addEvent(voidEv);
 
   renderRoomDetailContent();
-  showToast(`Voided ${originalType} ($${originalAmount})`);
+  showToast(`Voided ${originalType} (₦${originalAmount})`);
 };
 
 // --- COMPLETE CHECKOUT ---
@@ -1349,7 +1349,7 @@ window.previewBill = () => {
   const itemsList = room.charges.map(c => {
     if (c.status === 'Confirmed' || c.status === 'Pending') {
       total += c.amount;
-      return `<div class="breakdown-row"><span>${c.type}</span><span>$${c.amount}</span></div>`;
+      return `<div class="breakdown-row"><span>${c.type}</span><span>₦${c.amount}</span></div>`;
     }
     return '';
   }).join('');
