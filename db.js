@@ -1125,10 +1125,11 @@ async function seedMockData() {
   if (events.length > 0) {
     console.log("[DB] Seed version changed, clearing old data...");
     const db = await openDB();
-    const tx = db.transaction(['events', 'serverSettings', 'roomInventory'], 'readwrite');
+    const tx = db.transaction(['events', 'device_registration', 'snapshots', 'sync_queue'], 'readwrite');
     await tx.objectStore('events').clear();
-    await tx.objectStore('serverSettings').clear();
-    await tx.objectStore('roomInventory').clear();
+    await tx.objectStore('device_registration').clear();
+    await tx.objectStore('snapshots').clear();
+    await tx.objectStore('sync_queue').clear();
     await new Promise((resolve, reject) => {
       tx.oncomplete = resolve;
       tx.onerror = () => reject(tx.error);
