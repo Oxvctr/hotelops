@@ -94,10 +94,15 @@ window.addEventListener('DOMContentLoaded', () => {
 
 async function initApp() {
   try {
+    // Seed data first
     await seedMockData();
-    await ProjectionManager.ensureReady();
+    
+    // Run these in parallel for faster startup
+    const [savedRole] = await Promise.all([
+      getDeviceRegistration(),
+      ProjectionManager.ensureReady()
+    ]);
 
-    const savedRole = await getDeviceRegistration();
     if (savedRole) {
       state.deviceRole = savedRole;
       document.getElementById('lock-screen').classList.add('fade-blur');
@@ -292,7 +297,7 @@ async function submitActivationCode() {
     if (container) {
       container.innerHTML = '<div style="color: var(--text-secondary); font-size: 14px;">Loading hotel data…</div>';
     }
-    await ProjectionManager.ensureReady();
+    // Don't block lock screen on projections - initApp handles this
     setupLockScreenInputs();
     document.querySelectorAll('.code-input-box').forEach((box, i) => {
       if (code[i]) box.value = code[i];
@@ -538,6 +543,44 @@ function renderCurrentView() {
       renderStaffConsoleView(container);
       break;
   }
+}
+
+// --- OPTIMIZED ROOM CARD PATCHING ---
+function patchRoomCard(rNum, room) {
+  const card = document.getElementById(`room-card-${rNum}`);
+  if (!card) return false; // card doesn't exist yet, fall back to full render
+  
+  // Update just the dynamic parts
+  const badge = card.querySelector('.status-badge');
+  const guest = card.querySelector('.card-guest');
+  const cost = card.querySelector('.room-cost');
+  const pulse = card.querySelector('.pulse-indicator');
+  
+  // Update status badge
+  if (badge) badge.textContent = room.status;
+  
+  // Update guest name
+  if (guest) {
+    guest.textContent = room.guest_name || 'Vacant';
+    guest.classList.toggle('empty', !room.guest_name);
+  }
+  
+  // Update cost
+  let totalCost = 0;
+  room.charges.forEach(c => {
+    if (c.status === 'Confirmed' || c.status === 'Pending') totalCost += c.amount;
+  });
+  if (cost) cost.textContent = totalCost > 0 ? '$' + totalCost : '--';
+  
+  // Update pulse indicator
+  if (pulse) {
+    pulse.className = 'pulse-indicator';
+    if (room.status === 'Session Active') pulse.classList.add('pulse-active');
+    else if (room.status === 'Checkout Ready') pulse.classList.add('pulse-green');
+    else if (room.status === 'Offline') pulse.classList.add('pulse-amber');
+  }
+  
+  return true;
 }
 
 // --- HEADER PRESENCE UPDATE ---
@@ -2348,8 +2391,12 @@ function setupBroadcastListener() {
   window.broadcastChannel.onmessage = async (e) => {
     const msg = e.data;
     if (msg.type === 'EVENT_ADDED') {
-      ProjectionManager.invalidateCache();
-      await ProjectionManager.runProjections(true);
+      // Only do a full replay if the event isn't already in our cache
+      const alreadyHave = ProjectionManager._eventsCache?.some(ev => ev.id === msg.eventId);
+      if (!alreadyHave) {
+        ProjectionManager.invalidateCache();
+        await ProjectionManager.runProjections(true);
+      }
     } else if (msg.type === 'PRESENCE_UPDATE') {
       receivePresence(msg.presence);
     }

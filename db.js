@@ -815,7 +815,7 @@ class ProjectionManager {
   }
 
   static async applyEvent(event) {
-    await this.ensureReady();
+    if (!this._initialized) await this.ensureReady(); // only blocks if truly not ready
     this._eventsCache.push(event);
 
     RoomProjection.applyEvent(this.cachedRooms, event);
@@ -1033,8 +1033,11 @@ function cleanPresence() {
 
 // Periodically clean presence every 10s
 setInterval(() => {
+  const before = presenceList.length;
   cleanPresence();
-  if (window.appUpdateCallback) window.appUpdateCallback();
+  if (presenceList.length !== before && window.appUpdateCallback) {
+    window.appUpdateCallback();
+  }
 }, 10000);
 
 // Periodically compact note events every 6 hours
@@ -1110,7 +1113,7 @@ async function seedMockData() {
   if (events.length > 0) {
     await initServerSettings();
     await initRoomInventory();
-    await ProjectionManager.ensureReady();
+    // Don't call ensureReady here - initApp will handle it
     return;
   }
 

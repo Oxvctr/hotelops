@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hotel-ops-v7';
+const CACHE_NAME = 'hotel-ops-v8';
 const ASSETS = [
   './',
   './index.html',
@@ -33,28 +33,29 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
-  // If fetching local assets, use cache falling back to network.
-  // Ignore external network calls like mock API syncs if we want to test offline.
+  const url = new URL(e.request.url);
+  
+  // Always network-first for JS, CSS, and Netlify functions
+  const isAsset = url.pathname.endsWith('.js') || url.pathname.endsWith('.css');
+  const isFunction = url.pathname.startsWith('/.netlify/');
+  
+  if (isAsset || isFunction) {
+    e.respondWith(
+      fetch(e.request)
+        .then(response => {
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
+          }
+          return response;
+        })
+        .catch(() => caches.match(e.request)) // fallback to cache when offline
+    );
+    return;
+  }
+
+  // Cache-first for images, fonts, HTML
   e.respondWith(
-    caches.match(e.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(e.request).then((response) => {
-        // Cache new static resources if they are local
-        if (response && response.status === 200 && response.type === 'basic') {
-          const responseToCache = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(e.request, responseToCache);
-          });
-        }
-        return response;
-      }).catch(() => {
-        // Offline and not in cache
-        if (e.request.mode === 'navigate') {
-          return caches.match('./index.html');
-        }
-      });
-    })
+    caches.match(e.request).then(cached => cached || fetch(e.request))
   );
 });
