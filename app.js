@@ -68,7 +68,17 @@ window.state = state;
 window.appReady = false;
 
 // --- INITIALIZATION ---
-window.addEventListener('DOMContentLoaded', () => {
+// Safe wrapper: fires immediately if DOM is already parsed (happens with defer),
+// otherwise waits for DOMContentLoaded. Fixes the defer + DOMContentLoaded race.
+function onReady(fn) {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', fn);
+  } else {
+    fn();
+  }
+}
+
+onReady(() => {
   state.deviceName = getDeviceNameMock();
 
   window.appUpdateCallback = () => {
