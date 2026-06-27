@@ -986,7 +986,7 @@ body, p, .text-body {
 }
 
 .form-select option {
-  background: #1a1a2e;
+  background: #111111;
   color: #fff;
   padding: 12px;
 }
@@ -1115,6 +1115,10 @@ body, p, .text-body {
   font-family: var(--font-display);
   font-weight: 500;
   font-size: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
 }
 
 /* --- REVENUE STATISTICS --- */

@@ -1637,7 +1637,7 @@ function renderFeedItemsList(filter) {
     if (log.badge === 'Void') colorStyle = 'color: #ff5252;';
 
     const amtText = log.amount !== null 
-      ? `<span class="feed-amount" style="${colorStyle}">${log.amount > 0 ? '+$' + log.amount : '-$' + Math.abs(log.amount)}</span>` 
+      ? `<span class="feed-amount" style="${colorStyle}">${log.amount > 0 ? '+₦' + log.amount : '-₦' + Math.abs(log.amount)}</span>` 
       : '';
 
     item.innerHTML = `
@@ -1701,7 +1701,7 @@ function renderRevenueView(container) {
   metricsStrip.innerHTML = `
     <div class="revenue-card-metric">
       <span class="text-meta">Revenue</span>
-      <div class="val">$${rev.todayRevenue || 0}</div>
+      <div class="val">₦${rev.todayRevenue || 0}</div>
     </div>
     <div class="revenue-card-metric">
       <span class="text-meta">Rooms Active</span>
@@ -1751,7 +1751,7 @@ function renderRevenueView(container) {
   const dist = rev.serviceDistribution || {};
   const serviceList = Object.keys(dist)
     .sort((a,b) => dist[b] - dist[a])
-    .map(key => `<div class="breakdown-row"><span>${key}</span><span>$${dist[key]}</span></div>`)
+    .map(key => `<div class="breakdown-row"><span>${key}</span><span>₦${dist[key]}</span></div>`)
     .join('');
 
   breakdownPanel.innerHTML = `
