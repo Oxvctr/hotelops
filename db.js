@@ -851,8 +851,12 @@ class ProjectionManager {
     if (lastEvent.id === this.lastAppliedEventId && !force) return;
 
     this.cachedRoomInventory = await getRoomInventory();
-    this._fullReplay();
-    this.scheduleUIUpdate();
+
+    // Defer full replay off the main thread so UI stays responsive
+    setTimeout(() => {
+      this._fullReplay();
+      this.scheduleUIUpdate();
+    }, 0);
   }
 
   static async saveSnapshot(eventCount, lastEventId) {

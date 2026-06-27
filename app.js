@@ -100,7 +100,14 @@ onReady(() => {
   setupBroadcastListener();
   setupSlidePanelListeners();
   updateSyncPillUI();
-  setInterval(tickTimers, 1000);
+
+  // Use rAF-based loop so timer ticks never interrupt a paint frame
+  (function scheduleTick() {
+    setTimeout(() => {
+      tickTimers();
+      scheduleTick();
+    }, 1000);
+  })();
 
   // Run initApp in background - don't block lock screen
   initApp().catch(err => console.error('[Init] Startup failed:', err));
@@ -439,7 +446,11 @@ function switchView(viewName, navEl) {
   if (navEl) navEl.classList.add('active');
 
   closeRoomDetailPanel();
-  renderCurrentView();
+
+  // Yield to browser to paint the active highlight before heavy render
+  requestAnimationFrame(() => {
+    renderCurrentView();
+  });
 }
 
 async function lockApplication() {
