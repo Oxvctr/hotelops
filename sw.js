@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hotel-ops-v8';
+const CACHE_NAME = 'hotel-ops-v9';
 const ASSETS = [
   './',
   './index.html',
