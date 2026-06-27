@@ -65,7 +65,6 @@ window.broadcastChannel = new BroadcastChannel('hotel_ops_channel');
 window.deviceId = state.deviceId;
 window.state = state;
 
-window.appReady = false;
 
 // --- INITIALIZATION ---
 // Safe wrapper: fires immediately if DOM is already parsed (happens with defer),
@@ -99,7 +98,8 @@ onReady(() => {
   updateSyncPillUI();
   setInterval(tickTimers, 1000);
 
-  initApp();
+  // Run initApp in background - don't block lock screen
+  initApp().catch(err => console.error('[Init] Startup failed:', err));
 });
 
 async function initApp() {
@@ -129,18 +129,9 @@ async function initApp() {
         subscribeToRemoteEvents();
       }
     }
-
-    enableLockDemoChips();
   } catch (err) {
     console.error('[Init] Startup failed:', err);
   }
-}
-
-function enableLockDemoChips() {
-  document.querySelectorAll('.lock-demo-chip').forEach(chip => {
-    chip.disabled = false;
-    chip.classList.remove('loading');
-  });
 }
 
 // Mock browser device name
@@ -305,7 +296,39 @@ async function submitActivationCode() {
 
   document.querySelectorAll('.lock-demo-chip').forEach(c => c.disabled = true);
 
-  // Try backend authentication first
+  // Try local validation first (instant, no network)
+  const role = await validateInviteCode(code);
+  if (role) {
+    state.deviceRole = role;
+
+    const container = document.querySelector('.code-inputs');
+    container.innerHTML = '<div style="color: var(--text-primary); font-size: 14px;">Activating device...</div>';
+
+    await saveDeviceRegistration(role);
+    await ProjectionManager.ensureReady();
+
+    document.getElementById('lock-screen').classList.add('fade-blur');
+    setupSidebarForRole();
+    await ProjectionManager.runProjections(true);
+    renderCurrentView();
+
+    const activationEvent = {
+      id: `ev_act_${Date.now()}`,
+      type: 'ACTIVATE_DEVICE',
+      room_id: 'SYSTEM',
+      session_id: 'SYSTEM',
+      device_id: state.deviceId,
+      payload: { role, device_name: state.deviceName },
+      timestamp: Date.now(),
+      revision: 1
+    };
+    await addEvent(activationEvent);
+
+    showToast(`Device activated successfully as ${role.toUpperCase()}`);
+    return;
+  }
+
+  // Fallback to backend authentication (for cloud-managed codes)
   try {
     const response = await fetch(`${API_BASE}/auth`, {
       method: 'POST',
@@ -352,50 +375,19 @@ async function submitActivationCode() {
       return;
     }
   } catch (error) {
-    console.log('Backend auth failed, falling back to local validation:', error);
+    console.log('Backend auth failed:', error);
   }
 
-  // Fallback to local validation
-  const role = await validateInviteCode(code);
-  if (role) {
-    state.deviceRole = role;
-
-    const container = document.querySelector('.code-inputs');
-    container.innerHTML = '<div style="color: var(--text-primary); font-size: 14px;">Activating device...</div>';
-
-    await saveDeviceRegistration(role);
-    await ProjectionManager.ensureReady();
-
-    document.getElementById('lock-screen').classList.add('fade-blur');
-    setupSidebarForRole();
-    await ProjectionManager.runProjections(true);
-    renderCurrentView();
-
-    const activationEvent = {
-      id: `ev_act_${Date.now()}`,
-      type: 'ACTIVATE_DEVICE',
-      room_id: 'SYSTEM',
-      session_id: 'SYSTEM',
-      device_id: state.deviceId,
-      payload: { role, device_name: state.deviceName },
-      timestamp: Date.now(),
-      revision: 1
-    };
-    await addEvent(activationEvent);
-
-    showToast(`Device activated successfully as ${role.toUpperCase()}`);
-  } else {
-    // Flash error and clear, re-enable chips
-    document.querySelectorAll('.lock-demo-chip').forEach(c => c.disabled = false);
-    boxes.forEach(box => {
-      box.style.borderColor = '#ff5252';
-      box.value = '';
-    });
-    boxes[0].focus();
-    setTimeout(() => {
-      boxes.forEach(box => box.style.borderColor = 'rgba(255, 255, 255, 0.08)');
-    }, 1000);
-  }
+  // Both local and backend failed
+  document.querySelectorAll('.lock-demo-chip').forEach(c => c.disabled = false);
+  boxes.forEach(box => {
+    box.style.borderColor = '#ff5252';
+    box.value = '';
+  });
+  boxes[0].focus();
+  setTimeout(() => {
+    boxes.forEach(box => box.style.borderColor = 'rgba(255, 255, 255, 0.08)');
+  }, 1000);
 }
 
 // --- VIEW NAVIGATION SYSTEM ---
