@@ -148,13 +148,18 @@ function hasAdminClearance() {
 }
 
 function setupSidebarForRole() {
-  const sidebarNav = document.querySelector('.sidebar-nav');
+  const sidebarMenu = document.querySelector('.sidebar-menu');
   const roomsItem = document.getElementById('nav-rooms');
   const activityItem = document.getElementById('nav-activity');
   const revenueItem = document.getElementById('nav-revenue');
   const timemachineItem = document.getElementById('nav-timemachine');
   const settingsItem = document.getElementById('nav-settings');
-  
+
+  if (!sidebarMenu) {
+    console.error('[setupSidebarForRole] .sidebar-menu element not found!');
+    return;
+  }
+
   // Clean active states
   document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
   roomsItem.classList.add('active');
@@ -167,7 +172,7 @@ function setupSidebarForRole() {
     revenueItem.style.display = 'none';
     timemachineItem.style.display = 'none';
     settingsItem.style.display = 'none';
-    
+
     // Add a dedicated Staff Console button if not exists
     let staffConsoleBtn = document.getElementById('nav-staff-console');
     if (!staffConsoleBtn) {
@@ -183,7 +188,7 @@ function setupSidebarForRole() {
       staffConsoleBtn.addEventListener('click', () => {
         switchView('staff-console', staffConsoleBtn);
       });
-      sidebarNav.appendChild(staffConsoleBtn);
+      sidebarMenu.appendChild(staffConsoleBtn);
     }
     staffConsoleBtn.style.display = 'flex';
   } else {
@@ -519,11 +524,6 @@ function renderCurrentView() {
     return;
   }
   container.innerHTML = '';
-
-  // Broadcast current viewing presence
-  if (state.deviceRole) {
-    updateLocalPresence(state.deviceName, state.deviceRole, state.inspectedRoom, state.inspectedRoom ? 'editing' : 'viewing');
-  }
 
   console.log('[renderCurrentView] Switching to view:', state.activeView);
   switch (state.activeView) {
