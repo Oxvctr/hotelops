@@ -672,7 +672,7 @@ class TimelineProjection {
         badge = 'Staff';
         break;
       case 'VOID_CHARGE':
-        description = `Room ${ev.room_id}: Voided ${ev.payload.original_type} ($${ev.payload.original_amount})`;
+        description = `Room ${ev.room_id}: Voided ${ev.payload.original_type} (₦${ev.payload.original_amount})`;
         badge = 'Void';
         amount = -ev.payload.original_amount;
         break;

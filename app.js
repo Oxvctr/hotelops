@@ -1116,7 +1116,7 @@ window.submitQuickCharge = async (roomId) => {
   pills.forEach(p => p.classList.remove('selected'));
 
   renderRoomDetailContent();
-  showToast(`Pending ${selectedType} ($${amount}) queued. Confirm within 5 min.`);
+  showToast(`Pending ${selectedType} (₦${amount}) queued. Confirm within 5 min.`);
 };
 
 // Confirm Pending Charge: Commits via CONFIRM_CHARGE only
@@ -1146,7 +1146,7 @@ window.confirmPendingCharge = async (chargeId) => {
   await addEvent(confirmEv);
 
   renderRoomDetailContent();
-  showToast(`Charge Confirmed: ${pending.type} (+$${pending.amount})`);
+  showToast(`Charge Confirmed: ${pending.type} (+₦${pending.amount})`);
 };
 
 // Cancel Pending Charge — persists EXPIRE_CHARGE event
@@ -1368,7 +1368,7 @@ window.previewBill = () => {
       </div>
       <div class="breakdown-row" style="margin-top:20px; border-top:1px solid #333; padding-top:12px; font-weight:600; color:#fff; font-size:18px;">
         <span>Total Bill</span>
-        <span>$${total}</span>
+        <span>₦${total}</span>
       </div>
       <button class="btn-primary" style="margin-top:24px; width:100%;" onclick="closeInvoiceModal()">Close Preview</button>
     </div>
