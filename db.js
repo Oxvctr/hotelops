@@ -1007,12 +1007,18 @@ function updateLocalPresence(name, role, roomId, action) {
     timestamp: Date.now()
   };
 
-  // Broadcast to other tabs
+  // Broadcast to other tabs (not to ourselves)
   if (window.broadcastChannel) {
     window.broadcastChannel.postMessage({ type: 'PRESENCE_UPDATE', presence: updatedPresence });
   }
 
-  receivePresence(updatedPresence);
+  // Update local presence directly (don't use receivePresence to avoid loop)
+  presenceList = presenceList.filter(item => item.device_id !== deviceId);
+  if (roomId) { // If roomId is null, user went idle
+    presenceList.push(updatedPresence);
+  }
+  cleanPresence();
+  if (window.appUpdateCallback) window.appUpdateCallback();
 }
 
 function receivePresence(p) {
