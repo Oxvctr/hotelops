@@ -1539,14 +1539,26 @@ body, p, .text-body {
     padding: 0;
     border-right: none;
     border-top: var(--border-glass-light);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+  }
+  #sidebar:hover {
+    width: 100%;
   }
   .sidebar-logo {
     display: none;
+  }
+  .sidebar-logo span {
+    display: none !important;
   }
   .sidebar-menu {
     flex-direction: row;
     justify-content: space-around;
     height: 100%;
+    width: 100%;
+    gap: 0;
   }
   .menu-item {
     padding: 0;
@@ -1555,30 +1567,70 @@ body, p, .text-body {
     justify-content: center;
     border-left: none;
     border-bottom: 3px solid transparent;
+    flex: 1;
+  }
+  .menu-item span {
+    display: none !important;
+  }
+  .menu-item svg {
+    margin: 0;
   }
   .menu-item.active {
     border-bottom-color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.02);
   }
   #main-viewport {
     height: calc(100vh - 64px);
     padding: 16px;
     gap: 16px;
+    padding-bottom: 80px;
   }
   .room-grid {
     grid-template-columns: repeat(1, 100%);
     justify-content: stretch;
+    gap: 16px;
   }
   .room-card {
     width: 100%;
+    height: auto;
+    min-height: 180px;
   }
   #room-detail-panel {
     width: 100%;
     right: -100%;
+    padding: 20px;
+  }
+  #room-detail-panel.open {
+    right: 0;
+  }
+  .detail-header h2 {
+    font-size: 24px;
   }
   .revenue-grid, .live-activity-container, .settings-container {
     grid-template-columns: 1fr;
   }
   .revenue-cards-strip {
     grid-template-columns: repeat(2, 1fr);
+  }
+  .breakdown-panels {
+    grid-template-columns: 1fr;
+  }
+  .staff-console-panel {
+    padding: 20px;
+  }
+  .action-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .amount-quick-picker {
+    flex-wrap: wrap;
+  }
+  .amount-btn-pill {
+    min-width: calc(50% - 6px);
+  }
+  .checkout-actions-row {
+    flex-direction: column;
+  }
+  .btn-primary, .btn-secondary {
+    width: 100%;
   }
 }
