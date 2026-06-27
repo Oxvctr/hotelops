@@ -757,8 +757,12 @@ class ProjectionManager {
     await initRoomInventory();
     this.cachedRoomInventory = await getRoomInventory();
     await this.getEvents();
-    this._fullReplay();
-    this._initialized = true;
+
+    // Defer full replay to prevent blocking UI during initialization
+    setTimeout(() => {
+      this._fullReplay();
+      this._initialized = true;
+    }, 0);
   }
 
   static _newRevenueMeta() {

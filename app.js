@@ -536,15 +536,12 @@ window.submitNewSession = async () => {
 
 // --- RENDER COORDINATOR ---
 function renderCurrentView() {
-  console.log('[renderCurrentView] Called with activeView:', state.activeView, 'deviceRole:', state.deviceRole);
   const container = document.getElementById('main-content-area');
   if (!container) {
     console.error('[renderCurrentView] main-content-area element not found!');
     return;
   }
   container.innerHTML = '';
-
-  console.log('[renderCurrentView] Switching to view:', state.activeView);
   switch (state.activeView) {
     case 'rooms':
       renderRoomsView(container);
@@ -567,7 +564,6 @@ function renderCurrentView() {
     default:
       console.error('[renderCurrentView] Unknown view:', state.activeView);
   }
-  console.log('[renderCurrentView] Container children count after render:', container.children.length);
 }
 
 // --- OPTIMIZED ROOM CARD PATCHING ---
@@ -683,18 +679,14 @@ async function updateSyncPillUI() {
 
 // --- ROOM BOARD RENDERER (SCREEN 1) ---
 function renderRoomsView(container) {
-  console.log('[renderRoomsView] Starting render...');
-  
   // Title / Info row
   const header = document.createElement('div');
   header.className = 'viewport-header';
-  
+
   // Calculate active sessions count
-  const rooms = state.timeMachine.active 
+  const rooms = state.timeMachine.active
     ? window.historicalRoomsProjection || {}
     : ProjectionManager.cachedRooms;
-
-  console.log('[renderRoomsView] Rooms data:', rooms);
 
   let activeCount = 0;
   let vacantCount = 0;
@@ -714,11 +706,10 @@ function renderRoomsView(container) {
   // Main Room Grid
   const grid = document.createElement('div');
   grid.className = 'room-grid';
-  container.appendChild(grid);
 
-  // Load rooms data
-  console.log('[renderRoomsView] Room keys:', Object.keys(rooms));
-  
+  // Use DocumentFragment for batch DOM insertion to reduce reflows
+  const fragment = document.createDocumentFragment();
+
   for (const rNum in rooms) {
     const room = rooms[rNum];
     const card = document.createElement('div');
@@ -764,10 +755,12 @@ function renderRoomsView(container) {
       openRoomDetailPanel(rNum);
     });
 
-    grid.appendChild(card);
+    fragment.appendChild(card);
   }
 
-  console.log('[renderRoomsView] Grid children count:', grid.children.length);
+  // Append all cards in one operation to reduce reflows
+  grid.appendChild(fragment);
+  container.appendChild(grid);
 
   // Handle empty state if no rooms configured
   if (Object.keys(rooms).length === 0) {
