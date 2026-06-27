@@ -117,13 +117,11 @@ async function clearStore(storeName) {
 // --- DEVICE & CODE REGISTRATION SYSTEM ---
 const DEMO_CODE_ALIASES = {
   'STAFFINV': 'staff',
-  'FOUNDINV': 'founder',
   'ADMININV': 'admin'
 };
 
 const DEFAULT_SERVER_CODES = {
   staff_code: 'STAFF1234',
-  founder_code: 'FOUND5678',
   admin_code: 'ADMIN9012'
 };
 
@@ -134,7 +132,7 @@ function normalizeStoredCode(code) {
 function migrateLegacyCode(fieldKey, code) {
   const c = normalizeStoredCode(code);
   if (c.length >= 8) return c;
-  const prefixes = { staff_code: 'STAFF', founder_code: 'FOUND', admin_code: 'ADMIN' };
+  const prefixes = { staff_code: 'STAFF', admin_code: 'ADMIN' };
   if (/^\d+$/.test(c)) {
     return prefixes[fieldKey] + c.padStart(4, '0').slice(-4);
   }
@@ -147,7 +145,6 @@ async function validateInviteCode(code) {
 
   const codes = await getServerCodes();
   if (normalized === normalizeStoredCode(codes.staff_code)) return 'staff';
-  if (normalized === normalizeStoredCode(codes.founder_code)) return 'founder';
   if (normalized === normalizeStoredCode(codes.admin_code)) return 'admin';
   return null;
 }
@@ -174,7 +171,6 @@ async function initServerSettings() {
   const v = settings.value;
   const migrated = {
     staff_code: migrateLegacyCode('staff_code', v.staff_code),
-    founder_code: migrateLegacyCode('founder_code', v.founder_code),
     admin_code: migrateLegacyCode('admin_code', v.admin_code)
   };
   if (JSON.stringify(migrated) !== JSON.stringify(v)) {
@@ -187,7 +183,6 @@ async function updateServerCodes(codes) {
     key: 'server_codes',
     value: {
       staff_code: normalizeStoredCode(codes.staff_code),
-      founder_code: normalizeStoredCode(codes.founder_code),
       admin_code: normalizeStoredCode(codes.admin_code)
     }
   });
@@ -1113,16 +1108,34 @@ async function restoreHotelData(jsonStr) {
 }
 
 // --- MOCK DATABASE SEEDING ---
+const SEED_VERSION = 2; // Increment to force re-seed
 async function seedMockData() {
   const events = await getEvents();
-  if (events.length > 0) {
+  const storedVersion = localStorage.getItem('seedVersion');
+
+  // Force re-seed if version changed or database is empty
+  if (events.length > 0 && storedVersion == SEED_VERSION) {
     await initServerSettings();
     await initRoomInventory();
     // Don't call ensureReady here - initApp will handle it
     return;
   }
 
-  console.log("[DB] Empty database detected. Seeding mock operational logs for the past 48 hours...");
+  // Clear old data if version changed
+  if (events.length > 0) {
+    console.log("[DB] Seed version changed, clearing old data...");
+    const db = await openDB();
+    const tx = db.transaction(['events', 'serverSettings', 'roomInventory'], 'readwrite');
+    await tx.objectStore('events').clear();
+    await tx.objectStore('serverSettings').clear();
+    await tx.objectStore('roomInventory').clear();
+    await new Promise((resolve, reject) => {
+      tx.oncomplete = resolve;
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+
+  console.log("[DB] Seeding mock operational logs for the past 48 hours...");
 
   const seedEvents = [];
   const now = Date.now();
@@ -1290,6 +1303,9 @@ async function seedMockData() {
 
   // Clear sync queue for seed data (seed events don't need cloud upload)
   await clearStore('sync_queue');
+
+  // Save seed version to prevent re-seeding
+  localStorage.setItem('seedVersion', SEED_VERSION);
 
   console.log(`[DB] Seed complete. ${seedEvents.length} events, 15 sessions, initial snapshot created.`);
 }

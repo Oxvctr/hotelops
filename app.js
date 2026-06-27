@@ -2,7 +2,7 @@
  * app.js - Main Application Controller
  * 
  * Manages:
- * - Device activation flow (Staff, Founder, Admin).
+ * - Device activation flow (Staff, Admin).
  * - Application states (navigation, active rooms, online status).
  * - Renderers for Room Board, Slide-over Panel, Staff Console, Activity Heartbeat, Revenue, Settings.
  * - Time Machine navigation & Mode slider.
@@ -15,7 +15,7 @@
 // --- GLOBAL STATE ---
 const state = {
   activeView: 'rooms', // rooms, activity, revenue, time-machine, settings
-  deviceRole: null,    // staff, founder, admin
+  deviceRole: null,    // staff, admin
   deviceId: 'device_' + Math.random().toString(36).substring(2, 9),
   deviceName: '',
   sessionToken: localStorage.getItem('sessionToken') || null,
@@ -138,13 +138,13 @@ async function initApp() {
 function getDeviceNameMock() {
   const userAgent = navigator.userAgent;
   if (userAgent.includes('Mobi')) return 'Staff iPad';
-  if (userAgent.includes('Macintosh')) return 'Founder MacBook';
+  if (userAgent.includes('Macintosh')) return 'Admin MacBook';
   return 'Lobby Desktop';
 }
 
 // --- SIDEBAR SETUP FOR ROLES ---
 function hasAdminClearance() {
-  return state.deviceRole === 'admin' || state.deviceRole === 'founder';
+  return state.deviceRole === 'admin';
 }
 
 function setupSidebarForRole() {
@@ -192,7 +192,7 @@ function setupSidebarForRole() {
     }
     staffConsoleBtn.style.display = 'flex';
   } else {
-    // Founder / Admin see everything
+    // Admin sees everything
     activityItem.style.display = 'flex';
     revenueItem.style.display = 'flex';
     timemachineItem.style.display = 'flex';
@@ -944,7 +944,7 @@ function renderRoomDetailContent() {
     room.charges.forEach(c => {
       const item = document.createElement('div');
       item.className = 'charge-item-card';
-      
+
       let statusMarkup = '';
       if (c.status === 'Pending') {
         statusMarkup = `<span class="charge-status-optimistic">Uploading...</span>`;
@@ -952,18 +952,27 @@ function renderRoomDetailContent() {
         statusMarkup = `<span style="color:#ff5252; font-size:11px;">Voided</span>`;
       }
 
-      // Void action visible only to admin or founder role
-      const canVoid = (state.deviceRole === 'admin' || state.deviceRole === 'founder') && c.status === 'Confirmed' && !isReadOnly;
-      const voidButton = canVoid 
-        ? `<button class="void-btn" onclick="triggerVoidCharge('${rNum}', '${c.id}', ${c.amount}, '${c.type}')">Void</button>` 
+      // Void action visible only to admin role
+      const canVoid = state.deviceRole === 'admin' && c.status === 'Confirmed' && !isReadOnly;
+      const voidButton = canVoid
+        ? `<button class="void-btn" onclick="triggerVoidCharge('${rNum}', '${c.id}', ${c.amount}, '${c.type}')">Void</button>`
+        : '';
+
+      // Checkbox for multi-select (only for confirmed charges)
+      const canSelect = c.status === 'Confirmed' && !isReadOnly;
+      const checkbox = canSelect
+        ? `<input type="checkbox" class="charge-checkbox" data-charge-id="${c.id}" style="margin-right:12px; cursor:pointer;">`
         : '';
 
       item.innerHTML = `
-        <div>
-          <h4 style="font-weight:400; color:#fff;">+$${c.amount} ${c.type}</h4>
-          <p style="font-size:12px; color: var(--text-muted); margin-top:2px;">
-            ${new Date(c.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})} • by ${c.created_by}
-          </p>
+        <div style="display:flex; align-items:center;">
+          ${checkbox}
+          <div style="flex:1;">
+            <h4 style="font-weight:400; color:#fff;">+$${c.amount} ${c.type}</h4>
+            <p style="font-size:12px; color: var(--text-muted); margin-top:2px;">
+              ${new Date(c.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})} • by ${c.created_by}
+            </p>
+          </div>
         </div>
         <div>
           ${statusMarkup}
@@ -1449,16 +1458,18 @@ function renderStaffConsoleView(container) {
     </div>
   `;
 
-  // Prepopulate rooms select with active rooms
+  // Prepopulate rooms select with all rooms (both active and vacant)
   const rooms = ProjectionManager.cachedRooms;
   const select = document.getElementById('staff-room-picker');
   for (const rNum in rooms) {
-    if (rooms[rNum].status !== 'Vacant') {
-      const opt = document.createElement('option');
-      opt.value = rNum;
+    const opt = document.createElement('option');
+    opt.value = rNum;
+    if (rooms[rNum].status === 'Vacant') {
+      opt.innerText = `Room ${rNum} - Vacant`;
+    } else {
       opt.innerText = `Room ${rNum} (${rooms[rNum].guest_name})`;
-      select.appendChild(opt);
     }
+    select.appendChild(opt);
   }
 
   // Setup click listener for action grids
@@ -2001,7 +2012,7 @@ function renderSettingsSubtab(tabId) {
   } else if (tabId === 'stab-rooms') {
     inner.innerHTML = `
       <h2 class="text-section" style="margin-bottom:16px;">Rooms Setup</h2>
-      <p style="font-size:12px; margin-bottom:16px; color:var(--text-muted);">Configure room identifiers and categorization. (Founder/Admin clearance required)</p>
+      <p style="font-size:12px; margin-bottom:16px; color:var(--text-muted);">Configure room identifiers and categorization. (Admin clearance required)</p>
       <div id="rooms-inventory-list"></div>
     `;
 
@@ -2069,14 +2080,6 @@ function renderSettingsSubtab(tabId) {
           <input type="text" id="code-staff-input" class="form-input settings-row-input" maxlength="8" value="${codes.staff_code}" ${isAdmin ? '' : 'disabled'}>
         </div>
         
-        <div class="settings-row">
-          <div>
-            <h4>Founder Invitation Code</h4>
-            <p style="font-size:12px;">Grants dashboard and metrics access.</p>
-          </div>
-          <input type="text" id="code-founder-input" class="form-input settings-row-input" maxlength="8" value="${codes.founder_code}" ${isAdmin ? '' : 'disabled'}>
-        </div>
-
         <div class="settings-row" style="border:none;">
           <div>
             <h4>Admin Invitation Code</h4>
@@ -2325,15 +2328,14 @@ window.removeRoomFromInventory = async (rNum) => {
 
 window.saveAccessCodes = async () => {
   const staff = document.getElementById('code-staff-input').value.trim();
-  const founder = document.getElementById('code-founder-input').value.trim();
   const admin = document.getElementById('code-admin-input').value.trim();
 
-  if (!staff || !founder || !admin) {
+  if (!staff || !admin) {
     alert("Codes cannot be empty.");
     return;
   }
 
-  await updateServerCodes({ staff_code: staff, founder_code: founder, admin_code: admin });
+  await updateServerCodes({ staff_code: staff, admin_code: admin });
   showToast('Access codes rotated.');
 };
 
