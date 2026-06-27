@@ -42,7 +42,11 @@ const API_BASE = '/.netlify/functions';
 // Stats tracking function
 async function trackStat(statType, value = 1) {
   if (!state.sessionToken) return;
-  
+
+  // Skip Netlify function calls on Vercel deployment to prevent timeout delays
+  // These endpoints only exist on Netlify, not Vercel
+  return;
+
   try {
     await fetch(`${API_BASE}/stats`, {
       method: 'POST',
@@ -337,6 +341,9 @@ async function submitActivationCode() {
   }
 
   // Fallback to backend authentication (for cloud-managed codes)
+  // Skip Netlify function calls on Vercel deployment to prevent timeout delays
+  // These endpoints only exist on Netlify, not Vercel
+  /*
   try {
     const response = await fetch(`${API_BASE}/auth`, {
       method: 'POST',
@@ -385,6 +392,7 @@ async function submitActivationCode() {
   } catch (error) {
     console.log('Backend auth failed:', error);
   }
+  */
 
   // Both local and backend failed
   document.querySelectorAll('.lock-demo-chip').forEach(c => c.disabled = false);
