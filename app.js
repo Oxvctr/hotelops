@@ -512,7 +512,12 @@ window.submitNewSession = async () => {
 
 // --- RENDER COORDINATOR ---
 function renderCurrentView() {
+  console.log('[renderCurrentView] Called with activeView:', state.activeView, 'deviceRole:', state.deviceRole);
   const container = document.getElementById('main-content-area');
+  if (!container) {
+    console.error('[renderCurrentView] main-content-area element not found!');
+    return;
+  }
   container.innerHTML = '';
 
   // Broadcast current viewing presence
@@ -520,6 +525,7 @@ function renderCurrentView() {
     updateLocalPresence(state.deviceName, state.deviceRole, state.inspectedRoom, state.inspectedRoom ? 'editing' : 'viewing');
   }
 
+  console.log('[renderCurrentView] Switching to view:', state.activeView);
   switch (state.activeView) {
     case 'rooms':
       renderRoomsView(container);
@@ -539,7 +545,10 @@ function renderCurrentView() {
     case 'staff-console':
       renderStaffConsoleView(container);
       break;
+    default:
+      console.error('[renderCurrentView] Unknown view:', state.activeView);
   }
+  console.log('[renderCurrentView] Container children count after render:', container.children.length);
 }
 
 // --- OPTIMIZED ROOM CARD PATCHING ---
