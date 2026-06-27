@@ -148,7 +148,7 @@ function hasAdminClearance() {
 }
 
 function setupSidebarForRole() {
-  const sidebar = document.getElementById('sidebar');
+  const sidebarNav = document.querySelector('.sidebar-nav');
   const roomsItem = document.getElementById('nav-rooms');
   const activityItem = document.getElementById('nav-activity');
   const revenueItem = document.getElementById('nav-revenue');
@@ -183,7 +183,7 @@ function setupSidebarForRole() {
       staffConsoleBtn.addEventListener('click', () => {
         switchView('staff-console', staffConsoleBtn);
       });
-      sidebar.insertBefore(staffConsoleBtn, settingsItem);
+      sidebarNav.appendChild(staffConsoleBtn);
     }
     staffConsoleBtn.style.display = 'flex';
   } else {
