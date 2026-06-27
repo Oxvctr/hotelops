@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HotelOps — Hospitality Control Console</title>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="A minimalist offline-first hospitality operations system featuring Event Sourcing, real-time presence sync, and Time Machine capabilities.">
+  <meta name="theme-color" content="#111111">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="icon.svg">
+  
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="index.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet"></noscript>
+</head>
+<body>
+
+  <!-- Lock / Access Code Fullscreen Overlay -->
+  <div id="lock-screen">
+    <div class="code-prompt">
+      <div style="font-size: 32px; margin-bottom: 20px;">○</div>
+      <h1>Enter Access Code</h1>
+      <p>Enter your 8-character invitation code to unlock the console</p>
+      <div class="lock-demo-codes">
+        <p class="lock-demo-label">Demo codes (tap to use)</p>
+        <div class="lock-demo-chips">
+          <button type="button" class="lock-demo-chip" data-code="STAFFINV">STAFFINV</button>
+          <button type="button" class="lock-demo-chip" data-code="FOUNDINV">FOUNDINV</button>
+          <button type="button" class="lock-demo-chip" data-code="ADMININV">ADMININV</button>
+        </div>
+        <p class="lock-serve-hint">Requires a local web server — run <code>npx serve .</code> in this folder, then open the URL shown.</p>
+      </div>
+    </div>
+    <div class="code-inputs">
+      <!-- Generated dynamically in app.js -->
+    </div>
+  </div>
+
+  <!-- History replay banner -->
+  <div id="time-machine-bar" style="display:none; position:fixed; top:0; left:0; width:100%; padding:12px; background:rgba(255,255,255,0.08); border-bottom:1px solid rgba(255,255,255,0.3); z-index:9000; text-align:center; font-size:13px; color:rgba(255,255,255,0.9); letter-spacing:0.5px;">
+    <span>History replay active</span>
+  </div>
+
+  <!-- App Main Root Layout -->
+  <div id="app-root">
+    
+    <!-- Collapsible Master Sidebar (Desktop) / Bottom Bar (Mobile) -->
+    <nav id="sidebar">
+      <div class="sidebar-logo">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+        </svg>
+        <span>HotelOps</span>
+      </div>
+
+      <div class="sidebar-menu">
+        <div class="menu-item active" id="nav-rooms">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+          </svg>
+          <span>Rooms Board</span>
+        </div>
+
+        <div class="menu-item" id="nav-activity">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+          <span>Activity Center</span>
+        </div>
+
+        <div class="menu-item" id="nav-revenue">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>Revenue</span>
+        </div>
+
+        <div class="menu-item" id="nav-timemachine">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>History</span>
+        </div>
+
+        <div class="menu-item" id="nav-settings">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          <span>Settings</span>
+        </div>
+
+        <div class="menu-item" id="nav-lock" style="margin-top:auto;">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+          <span>Lock System</span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content Frame -->
+    <main id="main-viewport">
+      
+      <!-- Top header line for active presence and sync status -->
+      <div style="display:flex; justify-content:space-between; align-items:center; height:32px;">
+        <div style="display:flex; gap:16px;" id="presence-list-header">
+          <!-- Populated dynamically via presence manager -->
+        </div>
+
+        <div style="display:flex; gap:16px; align-items:center;">
+          <span class="text-meta" style="color:var(--text-muted); font-size:12px; font-weight:500;" id="header-role-badge">STAFF</span>
+          
+          <div class="sync-indicator-pill" id="sync-status-pill" style="cursor:pointer;">
+            <span class="sync-dot synced"></span>
+            <span>Synced</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main active page workspace -->
+      <div id="main-content-area" class="scroll-container" style="flex-grow:1; display:flex; flex-direction:column; gap:24px;">
+        <!-- Injected dynamically in app.js -->
+      </div>
+      
+    </main>
+  </div>
+
+  <!-- Screen 2 Slide-over details panel -->
+  <div id="room-detail-panel">
+    <div class="detail-header">
+      <button class="close-panel-btn" id="close-panel-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+      <h2 id="detail-room-number">Room 203</h2>
+      <p id="detail-room-type" style="color: var(--text-secondary); margin-bottom:12px;">Executive Suite</p>
+      
+      <div class="detail-row-align">
+        <div>
+          <span class="text-meta">Timer</span>
+          <h4 id="detail-room-timer" style="font-size: 20px; font-weight:400; color:#fff; margin-top:2px;">03:24:12</h4>
+        </div>
+        <div style="text-align: right;">
+          <span class="text-meta">Current Bill</span>
+          <h4 id="detail-room-cost" style="font-size: 20px; font-weight:400; color:#fff; margin-top:2px;">$142</h4>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel tab switcher -->
+    <div class="detail-tabs">
+      <button class="tab-btn active" id="tab-timeline">Timeline</button>
+      <button class="tab-btn" id="tab-charges">Charges</button>
+      <button class="tab-btn" id="tab-notes">Notes</button>
+    </div>
+
+    <!-- Dynamic tab body scroll zone -->
+    <div class="detail-body-scroll scroll-container" id="detail-scroll-area">
+      <!-- Populated dynamically -->
+    </div>
+
+    <!-- Sticky footer checkout area -->
+    <div class="detail-footer-checkout" id="detail-checkout-area">
+      <div class="checkout-actions-row">
+        <button class="btn-secondary" id="btn-preview-bill" onclick="previewBill()">Preview Bill</button>
+        <button class="btn-primary" id="btn-complete-checkout" onclick="completeCheckout()">Complete Checkout</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Command Palette overlay (Ctrl+K) -->
+  <div id="command-palette-overlay">
+    <div class="palette-box">
+      <input type="text" id="palette-search" placeholder="Type a room number or action..." class="palette-search-input">
+      <div class="palette-results-list scroll-container" id="palette-results">
+        <!-- Results rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Invoice Preview Modal -->
+  <div id="invoice-modal" class="invoice-overlay" onclick="if(event.target.id === 'invoice-modal') closeInvoiceModal()">
+    <!-- Populated dynamically on invoice preview -->
+  </div>
+
+  <!-- Success Toast message -->
+  <div class="success-toast" id="success-toast">Action Confirmed</div>
+
+  <!-- Supabase JS SDK (must load before supabase.js) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+  <!-- Scripts -->
+  <script src="db.js"></script>
+  <script src="supabase.js"></script>
+  <script src="app.js"></script>
+
+  <!-- PWA Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('[Service Worker] Registered with scope:', reg.scope))
+          .catch(err => console.error('[Service Worker] Registration failed:', err));
+      });
+    }
+  </script>
+</body>
+</html>
