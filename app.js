@@ -84,12 +84,19 @@ function onReady(fn) {
 onReady(() => {
   state.deviceName = getDeviceNameMock();
 
+  let renderScheduled = false;
   window.appUpdateCallback = () => {
-    if (state.deviceRole) {
-      renderCurrentView();
-      updateHeaderPresence();
-    }
-    updateSyncPillUI();
+    if (renderScheduled) return; // Skip if render already scheduled for this frame
+    renderScheduled = true;
+
+    requestAnimationFrame(() => {
+      renderScheduled = false;
+      if (state.deviceRole) {
+        renderCurrentView();
+        updateHeaderPresence();
+      }
+      updateSyncPillUI();
+    });
   };
 
   // Wire UI immediately — don't block on database seed

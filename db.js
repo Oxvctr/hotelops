@@ -753,6 +753,10 @@ class ProjectionManager {
 
   static async ensureReady() {
     if (this._initialized) return;
+
+    // Set initialized flag immediately to prevent concurrent calls
+    this._initialized = true;
+
     await initServerSettings();
     await initRoomInventory();
     this.cachedRoomInventory = await getRoomInventory();
@@ -761,7 +765,6 @@ class ProjectionManager {
     // Defer full replay to prevent blocking UI during initialization
     setTimeout(() => {
       this._fullReplay();
-      this._initialized = true;
     }, 0);
   }
 
