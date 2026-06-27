@@ -764,7 +764,6 @@ class ProjectionManager {
     await this.getEvents();
     this._fullReplay();
     this._initialized = true;
-    window.appReady = true;
   }
 
   static _newRevenueMeta() {

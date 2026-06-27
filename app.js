@@ -296,6 +296,9 @@ async function submitActivationCode() {
 
   document.querySelectorAll('.lock-demo-chip').forEach(c => c.disabled = true);
 
+  // Ensure database is seeded before activation
+  await seedMockData();
+
   // Try local validation first (instant, no network)
   const role = await validateInviteCode(code);
   if (role) {
