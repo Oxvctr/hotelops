@@ -1,0 +1,21 @@
+{
+  "name": "hotel-ops-pwa",
+  "version": "1.0.0",
+  "description": "HotelOps PWA with Netlify Functions backend",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx serve ."
+  },
+  "dependencies": {
+    "mongodb": "^6.3.0"
+  },
+  "devDependencies": {},
+  "keywords": [
+    "hotel",
+    "pwa",
+    "netlify",
+    "functions"
+  ],
+  "author": "",
+  "license": "MIT"
+}

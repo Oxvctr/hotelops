@@ -18,6 +18,7 @@ const state = {
   deviceRole: null,    // staff, founder, admin
   deviceId: 'device_' + Math.random().toString(36).substring(2, 9),
   deviceName: '',
+  sessionToken: localStorage.getItem('sessionToken') || null,
   simulatedOffline: false,
   inspectedRoom: null, // room number currently viewing in slide-panel
   detailActiveTab: 'timeline', // timeline, charges, notes
@@ -34,6 +35,30 @@ const state = {
     sliderVal: 100
   }
 };
+
+// Backend API configuration
+const API_BASE = '/.netlify/functions';
+
+// Stats tracking function
+async function trackStat(statType, value = 1) {
+  if (!state.sessionToken) return;
+  
+  try {
+    await fetch(`${API_BASE}/stats`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'increment',
+        deviceId: state.deviceId,
+        sessionToken: state.sessionToken,
+        statType,
+        value
+      })
+    });
+  } catch (error) {
+    console.log('Stat tracking failed:', error);
+  }
+}
 
 // Global instance of broadcast channel
 window.broadcastChannel = new BroadcastChannel('hotel_ops_channel');
@@ -274,6 +299,57 @@ async function submitActivationCode() {
     });
   }
 
+  // Try backend authentication first
+  try {
+    const response = await fetch(`${API_BASE}/auth`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'validate',
+        code,
+        deviceId: state.deviceId,
+        deviceName: state.deviceName
+      })
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      state.deviceRole = result.role;
+      state.sessionToken = result.sessionToken;
+      localStorage.setItem('sessionToken', result.sessionToken);
+
+      const container = document.querySelector('.code-inputs');
+      container.innerHTML = '<div style="color: var(--text-primary); font-size: 14px;">Activating device...</div>';
+
+      await saveDeviceRegistration(result.role);
+      await ProjectionManager.ensureReady();
+
+      document.getElementById('lock-screen').classList.add('fade-blur');
+      setupSidebarForRole();
+      await ProjectionManager.runProjections(true);
+      renderCurrentView();
+
+      const activationEvent = {
+        id: `ev_act_${Date.now()}`,
+        type: 'ACTIVATE_DEVICE',
+        room_id: 'SYSTEM',
+        session_id: 'SYSTEM',
+        device_id: state.deviceId,
+        payload: { role: result.role, device_name: state.deviceName },
+        timestamp: Date.now(),
+        revision: 1
+      };
+      await addEvent(activationEvent);
+
+      showToast(`Device activated successfully as ${result.role.toUpperCase()}`);
+      return;
+    }
+  } catch (error) {
+    console.log('Backend auth failed, falling back to local validation:', error);
+  }
+
+  // Fallback to local validation
   const role = await validateInviteCode(code);
   if (role) {
     state.deviceRole = role;
@@ -286,6 +362,7 @@ async function submitActivationCode() {
 
     document.getElementById('lock-screen').classList.add('fade-blur');
     setupSidebarForRole();
+    await ProjectionManager.runProjections(true);
     renderCurrentView();
 
     const activationEvent = {
