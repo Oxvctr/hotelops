@@ -284,9 +284,8 @@ function setupLockScreenInputs() {
   boxes[0].focus();
 
   document.querySelectorAll('.lock-demo-chip').forEach(chip => {
-    chip.disabled = !window.appReady;
+    chip.disabled = false;
     chip.onclick = () => {
-      if (!window.appReady) return;
       const code = chip.dataset.code || '';
       for (let i = 0; i < code.length && i < 8; i++) {
         if (boxes[i]) boxes[i].value = code[i];
@@ -302,17 +301,9 @@ async function submitActivationCode() {
   boxes.forEach(box => code += box.value);
   code = code.toUpperCase();
 
-  if (!window.appReady) {
-    const container = document.querySelector('.code-inputs');
-    if (container) {
-      container.innerHTML = '<div style="color: var(--text-secondary); font-size: 14px;">Loading hotel data…</div>';
-    }
-    // Don't block lock screen on projections - initApp handles this
-    setupLockScreenInputs();
-    document.querySelectorAll('.code-input-box').forEach((box, i) => {
-      if (code[i]) box.value = code[i];
-    });
-  }
+  if (code.length < 8) return;
+
+  document.querySelectorAll('.lock-demo-chip').forEach(c => c.disabled = true);
 
   // Try backend authentication first
   try {
@@ -394,7 +385,8 @@ async function submitActivationCode() {
 
     showToast(`Device activated successfully as ${role.toUpperCase()}`);
   } else {
-    // Flash error and clear
+    // Flash error and clear, re-enable chips
+    document.querySelectorAll('.lock-demo-chip').forEach(c => c.disabled = false);
     boxes.forEach(box => {
       box.style.borderColor = '#ff5252';
       box.value = '';
