@@ -985,6 +985,12 @@ body, p, .text-body {
   outline: none;
 }
 
+.form-select option {
+  background: #1a1a2e;
+  color: #fff;
+  padding: 12px;
+}
+
 .form-select:focus, .form-input:focus {
   border-color: rgba(255,255,255,0.2);
 }

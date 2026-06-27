@@ -1148,103 +1148,103 @@ async function seedMockData() {
 
   // --- SEED YESTERDAY ---
   // Room 101 Checked in 36h ago, checked out 24h ago
-  pushEvent('ROOM_CHECKIN',    '101', 'sess_y1', { guest_name: 'David Miller' },      36 * oneHour);
-  pushEvent('ADD_CHARGE',      '101', 'sess_y1', { charge_id: 'ch_y1', type: 'Spa',    amount: 80,  created_by: 'John' }, 34 * oneHour);
-  pushEvent('CONFIRM_CHARGE',  '101', 'sess_y1', { charge_id: 'ch_y1', type: 'Spa',    amount: 80  }, 34 * oneHour - 1000);
-  pushEvent('ADD_CHARGE',      '101', 'sess_y1', { charge_id: 'ch_y2', type: 'Bar',    amount: 35,  created_by: 'Mary' }, 30 * oneHour);
-  pushEvent('CONFIRM_CHARGE',  '101', 'sess_y1', { charge_id: 'ch_y2', type: 'Bar',    amount: 35  }, 30 * oneHour - 1000);
+  pushEvent('ROOM_CHECKIN',    '101', 'sess_y1', { guest_name: 'Chinedu Okonkwo' },      36 * oneHour);
+  pushEvent('ADD_CHARGE',      '101', 'sess_y1', { charge_id: 'ch_y1', type: 'Spa',    amount: 80000,  created_by: 'John' }, 34 * oneHour);
+  pushEvent('CONFIRM_CHARGE',  '101', 'sess_y1', { charge_id: 'ch_y1', type: 'Spa',    amount: 80000  }, 34 * oneHour - 1000);
+  pushEvent('ADD_CHARGE',      '101', 'sess_y1', { charge_id: 'ch_y2', type: 'Bar',    amount: 35000,  created_by: 'Mary' }, 30 * oneHour);
+  pushEvent('CONFIRM_CHARGE',  '101', 'sess_y1', { charge_id: 'ch_y2', type: 'Bar',    amount: 35000  }, 30 * oneHour - 1000);
   pushEvent('ADD_NOTE',        '101', 'sess_y1', { content: 'Guest requested late checkout extension', created_by: 'John' }, 28 * oneHour);
   pushEvent('CHECKOUT',        '101', 'sess_y1', {},                                                24 * oneHour);
 
   // Room 202 Checked in 30h ago, checked out 20h ago
-  pushEvent('ROOM_CHECKIN',    '202', 'sess_y2', { guest_name: 'Emma Watson' },        30 * oneHour);
-  pushEvent('ADD_CHARGE',      '202', 'sess_y2', { charge_id: 'ch_y3', type: 'Extend', amount: 150, created_by: 'Mary' }, 28 * oneHour);
-  pushEvent('CONFIRM_CHARGE',  '202', 'sess_y2', { charge_id: 'ch_y3', type: 'Extend', amount: 150 }, 28 * oneHour - 1000);
-  pushEvent('ADD_CHARGE',      '202', 'sess_y2', { charge_id: 'ch_y9', type: 'Bar',    amount: 60,  created_by: 'John' }, 26 * oneHour);
-  pushEvent('CONFIRM_CHARGE',  '202', 'sess_y2', { charge_id: 'ch_y9', type: 'Bar',    amount: 60  }, 26 * oneHour - 1000);
+  pushEvent('ROOM_CHECKIN',    '202', 'sess_y2', { guest_name: 'Adewale Adeyemi' },        30 * oneHour);
+  pushEvent('ADD_CHARGE',      '202', 'sess_y2', { charge_id: 'ch_y3', type: 'Extend', amount: 150000, created_by: 'Mary' }, 28 * oneHour);
+  pushEvent('CONFIRM_CHARGE',  '202', 'sess_y2', { charge_id: 'ch_y3', type: 'Extend', amount: 150000 }, 28 * oneHour - 1000);
+  pushEvent('ADD_CHARGE',      '202', 'sess_y2', { charge_id: 'ch_y9', type: 'Bar',    amount: 60000,  created_by: 'John' }, 26 * oneHour);
+  pushEvent('CONFIRM_CHARGE',  '202', 'sess_y2', { charge_id: 'ch_y9', type: 'Bar',    amount: 60000  }, 26 * oneHour - 1000);
   pushEvent('CHECKOUT',        '202', 'sess_y2', {},                                                20 * oneHour);
 
   // Room 301 checked in 40h ago, checked out 22h ago
-  pushEvent('ROOM_CHECKIN',    '301', 'sess_y3', { guest_name: 'Robert Downey' },      40 * oneHour);
-  pushEvent('ADD_CHARGE',      '301', 'sess_y3', { charge_id: 'ch_y4', type: 'Laundry', amount: 45, created_by: 'John' }, 38 * oneHour);
-  pushEvent('CONFIRM_CHARGE',  '301', 'sess_y3', { charge_id: 'ch_y4', type: 'Laundry', amount: 45 }, 38 * oneHour - 1000);
-  pushEvent('ADD_CHARGE',      '301', 'sess_y3', { charge_id: 'ch_y5', type: 'Spa',    amount: 120, created_by: 'John' }, 32 * oneHour);
-  pushEvent('CONFIRM_CHARGE',  '301', 'sess_y3', { charge_id: 'ch_y5', type: 'Spa',    amount: 120 }, 32 * oneHour - 1000);
+  pushEvent('ROOM_CHECKIN',    '301', 'sess_y3', { guest_name: 'Ngozi Okafor' },      40 * oneHour);
+  pushEvent('ADD_CHARGE',      '301', 'sess_y3', { charge_id: 'ch_y4', type: 'Laundry', amount: 45000, created_by: 'John' }, 38 * oneHour);
+  pushEvent('CONFIRM_CHARGE',  '301', 'sess_y3', { charge_id: 'ch_y4', type: 'Laundry', amount: 45000 }, 38 * oneHour - 1000);
+  pushEvent('ADD_CHARGE',      '301', 'sess_y3', { charge_id: 'ch_y5', type: 'Spa',    amount: 120000, created_by: 'John' }, 32 * oneHour);
+  pushEvent('CONFIRM_CHARGE',  '301', 'sess_y3', { charge_id: 'ch_y5', type: 'Spa',    amount: 120000 }, 32 * oneHour - 1000);
   pushEvent('CHECKOUT',        '301', 'sess_y3', {},                                                22 * oneHour);
 
   // Room 304 checked in 38h ago, checked out 18h ago
-  pushEvent('ROOM_CHECKIN',    '304', 'sess_y4', { guest_name: 'Priyanka Chopra' },    38 * oneHour);
-  pushEvent('ADD_CHARGE',      '304', 'sess_y4', { charge_id: 'ch_y6', type: 'Spa',    amount: 200, created_by: 'Mary' }, 35 * oneHour);
-  pushEvent('CONFIRM_CHARGE',  '304', 'sess_y4', { charge_id: 'ch_y6', type: 'Spa',    amount: 200 }, 35 * oneHour - 1000);
-  pushEvent('ADD_CHARGE',      '304', 'sess_y4', { charge_id: 'ch_y7', type: 'Custom', amount: 75,  created_by: 'John' }, 31 * oneHour);
-  pushEvent('CONFIRM_CHARGE',  '304', 'sess_y4', { charge_id: 'ch_y7', type: 'Custom', amount: 75  }, 31 * oneHour - 1000);
+  pushEvent('ROOM_CHECKIN',    '304', 'sess_y4', { guest_name: 'Emeka Nwachukwu' },    38 * oneHour);
+  pushEvent('ADD_CHARGE',      '304', 'sess_y4', { charge_id: 'ch_y6', type: 'Spa',    amount: 200000, created_by: 'Mary' }, 35 * oneHour);
+  pushEvent('CONFIRM_CHARGE',  '304', 'sess_y4', { charge_id: 'ch_y6', type: 'Spa',    amount: 200000 }, 35 * oneHour - 1000);
+  pushEvent('ADD_CHARGE',      '304', 'sess_y4', { charge_id: 'ch_y7', type: 'Custom', amount: 75000,  created_by: 'John' }, 31 * oneHour);
+  pushEvent('CONFIRM_CHARGE',  '304', 'sess_y4', { charge_id: 'ch_y7', type: 'Custom', amount: 75000  }, 31 * oneHour - 1000);
   pushEvent('ADD_NOTE',        '304', 'sess_y4', { content: 'Minibar restocked on request', created_by: 'Mary' }, 30 * oneHour);
   pushEvent('CHECKOUT',        '304', 'sess_y4', {},                                                18 * oneHour);
 
   // Room 201 checked in 33h ago, checked out 16h ago
-  pushEvent('ROOM_CHECKIN',    '201', 'sess_y5', { guest_name: 'Henry Cavill' },       33 * oneHour);
-  pushEvent('ADD_CHARGE',      '201', 'sess_y5', { charge_id: 'ch_y8', type: 'Bar',    amount: 90,  created_by: 'John' }, 29 * oneHour);
-  pushEvent('CONFIRM_CHARGE',  '201', 'sess_y5', { charge_id: 'ch_y8', type: 'Bar',    amount: 90  }, 29 * oneHour - 1000);
+  pushEvent('ROOM_CHECKIN',    '201', 'sess_y5', { guest_name: 'Funke Akindele' },       33 * oneHour);
+  pushEvent('ADD_CHARGE',      '201', 'sess_y5', { charge_id: 'ch_y8', type: 'Bar',    amount: 90000,  created_by: 'John' }, 29 * oneHour);
+  pushEvent('CONFIRM_CHARGE',  '201', 'sess_y5', { charge_id: 'ch_y8', type: 'Bar',    amount: 90000  }, 29 * oneHour - 1000);
   pushEvent('CHECKOUT',        '201', 'sess_y5', {},                                                16 * oneHour);
 
   // Room 303 checked in 28h ago, checked out 14h ago
-  pushEvent('ROOM_CHECKIN',    '303', 'sess_y6', { guest_name: 'Ana de Armas' },       28 * oneHour);
-  pushEvent('ADD_CHARGE',      '303', 'sess_y6', { charge_id: 'ch_ya', type: 'Spa',    amount: 160, created_by: 'Mary' }, 26 * oneHour);
-  pushEvent('CONFIRM_CHARGE',  '303', 'sess_y6', { charge_id: 'ch_ya', type: 'Spa',    amount: 160 }, 26 * oneHour - 1000);
-  pushEvent('ADD_CHARGE',      '303', 'sess_y6', { charge_id: 'ch_yb', type: 'Laundry', amount: 40, created_by: 'John' }, 24 * oneHour);
-  pushEvent('CONFIRM_CHARGE',  '303', 'sess_y6', { charge_id: 'ch_yb', type: 'Laundry', amount: 40 }, 24 * oneHour - 1000);
+  pushEvent('ROOM_CHECKIN',    '303', 'sess_y6', { guest_name: 'Chioma Eze' },       28 * oneHour);
+  pushEvent('ADD_CHARGE',      '303', 'sess_y6', { charge_id: 'ch_ya', type: 'Spa',    amount: 160000, created_by: 'Mary' }, 26 * oneHour);
+  pushEvent('CONFIRM_CHARGE',  '303', 'sess_y6', { charge_id: 'ch_ya', type: 'Spa',    amount: 160000 }, 26 * oneHour - 1000);
+  pushEvent('ADD_CHARGE',      '303', 'sess_y6', { charge_id: 'ch_yb', type: 'Laundry', amount: 40000, created_by: 'John' }, 24 * oneHour);
+  pushEvent('CONFIRM_CHARGE',  '303', 'sess_y6', { charge_id: 'ch_yb', type: 'Laundry', amount: 40000 }, 24 * oneHour - 1000);
   pushEvent('CHECKOUT',        '303', 'sess_y6', {},                                                14 * oneHour);
 
   // Room 102 checked in 25h ago, checked out 12h ago
-  pushEvent('ROOM_CHECKIN',    '102', 'sess_y7', { guest_name: 'Tom Holland' },        25 * oneHour);
-  pushEvent('ADD_CHARGE',      '102', 'sess_y7', { charge_id: 'ch_yc', type: 'Extend', amount: 100, created_by: 'Mary' }, 22 * oneHour);
-  pushEvent('CONFIRM_CHARGE',  '102', 'sess_y7', { charge_id: 'ch_yc', type: 'Extend', amount: 100 }, 22 * oneHour - 1000);
+  pushEvent('ROOM_CHECKIN',    '102', 'sess_y7', { guest_name: 'Olumide Bankole' },        25 * oneHour);
+  pushEvent('ADD_CHARGE',      '102', 'sess_y7', { charge_id: 'ch_yc', type: 'Extend', amount: 100000, created_by: 'Mary' }, 22 * oneHour);
+  pushEvent('CONFIRM_CHARGE',  '102', 'sess_y7', { charge_id: 'ch_yc', type: 'Extend', amount: 100000 }, 22 * oneHour - 1000);
   pushEvent('CHECKOUT',        '102', 'sess_y7', {},                                                12 * oneHour);
 
   // --- SEED TODAY (active sessions) ---
   // Room 203 Checked in 8h ago, active session
-  pushEvent('ROOM_CHECKIN',    '203', 'sess_t1', { guest_name: 'Samuel Jackson' },     8 * oneHour);
-  pushEvent('ADD_CHARGE',      '203', 'sess_t1', { charge_id: 'ch_t1', type: 'Spa',    amount: 90,  created_by: 'John' }, 7 * oneHour);
-  pushEvent('CONFIRM_CHARGE',  '203', 'sess_t1', { charge_id: 'ch_t1', type: 'Spa',    amount: 90  }, 7 * oneHour - 1000);
-  pushEvent('ADD_CHARGE',      '203', 'sess_t1', { charge_id: 'ch_t2', type: 'Bar',    amount: 52,  created_by: 'Mary' }, 6 * oneHour);
-  pushEvent('CONFIRM_CHARGE',  '203', 'sess_t1', { charge_id: 'ch_t2', type: 'Bar',    amount: 52  }, 6 * oneHour - 1000);
+  pushEvent('ROOM_CHECKIN',    '203', 'sess_t1', { guest_name: 'Tunde Bakare' },     8 * oneHour);
+  pushEvent('ADD_CHARGE',      '203', 'sess_t1', { charge_id: 'ch_t1', type: 'Spa',    amount: 90000,  created_by: 'John' }, 7 * oneHour);
+  pushEvent('CONFIRM_CHARGE',  '203', 'sess_t1', { charge_id: 'ch_t1', type: 'Spa',    amount: 90000  }, 7 * oneHour - 1000);
+  pushEvent('ADD_CHARGE',      '203', 'sess_t1', { charge_id: 'ch_t2', type: 'Bar',    amount: 52000,  created_by: 'Mary' }, 6 * oneHour);
+  pushEvent('CONFIRM_CHARGE',  '203', 'sess_t1', { charge_id: 'ch_t2', type: 'Bar',    amount: 52000  }, 6 * oneHour - 1000);
   pushEvent('ADD_NOTE',        '203', 'sess_t1', { content: 'Guest requested extra soft pillows', created_by: 'Mary' }, 5 * oneHour);
 
   // Room 302 Checked in 5h ago, active session
-  pushEvent('ROOM_CHECKIN',    '302', 'sess_t2', { guest_name: 'Scarlett Johansson' }, 5 * oneHour);
-  pushEvent('ADD_CHARGE',      '302', 'sess_t2', { charge_id: 'ch_t3', type: 'Spa',    amount: 140, created_by: 'John' }, 4 * oneHour);
-  pushEvent('CONFIRM_CHARGE',  '302', 'sess_t2', { charge_id: 'ch_t3', type: 'Spa',    amount: 140 }, 4 * oneHour - 1000);
+  pushEvent('ROOM_CHECKIN',    '302', 'sess_t2', { guest_name: 'Blessing Obi' }, 5 * oneHour);
+  pushEvent('ADD_CHARGE',      '302', 'sess_t2', { charge_id: 'ch_t3', type: 'Spa',    amount: 140000, created_by: 'John' }, 4 * oneHour);
+  pushEvent('CONFIRM_CHARGE',  '302', 'sess_t2', { charge_id: 'ch_t3', type: 'Spa',    amount: 140000 }, 4 * oneHour - 1000);
   pushEvent('ADD_NOTE',        '302', 'sess_t2', { content: 'AC fan speed restricted to Low', created_by: 'John' }, 3 * oneHour);
 
   // Room 301 Checked in 3h ago, active session
-  pushEvent('ROOM_CHECKIN',    '301', 'sess_t3', { guest_name: 'Chris Evans' },        3 * oneHour);
-  pushEvent('ADD_CHARGE',      '301', 'sess_t3', { charge_id: 'ch_t4', type: 'Laundry', amount: 30, created_by: 'Mary' }, 2 * oneHour);
-  pushEvent('CONFIRM_CHARGE',  '301', 'sess_t3', { charge_id: 'ch_t4', type: 'Laundry', amount: 30 }, 2 * oneHour - 1000);
+  pushEvent('ROOM_CHECKIN',    '301', 'sess_t3', { guest_name: 'Ifeanyi Nwosu' },        3 * oneHour);
+  pushEvent('ADD_CHARGE',      '301', 'sess_t3', { charge_id: 'ch_t4', type: 'Laundry', amount: 30000, created_by: 'Mary' }, 2 * oneHour);
+  pushEvent('CONFIRM_CHARGE',  '301', 'sess_t3', { charge_id: 'ch_t4', type: 'Laundry', amount: 30000 }, 2 * oneHour - 1000);
 
   // Room 103 Checked in 1h ago, session active
-  pushEvent('ROOM_CHECKIN',    '103', 'sess_t4', { guest_name: 'Elizabeth Olsen' },    1 * oneHour);
+  pushEvent('ROOM_CHECKIN',    '103', 'sess_t4', { guest_name: 'Chidinma Okeke' },    1 * oneHour);
 
   // Room 201 Checked in 2h ago, active session
-  pushEvent('ROOM_CHECKIN',    '201', 'sess_t5', { guest_name: 'Zendaya Coleman' },    2 * oneHour);
-  pushEvent('ADD_CHARGE',      '201', 'sess_t5', { charge_id: 'ch_t5', type: 'Bar',    amount: 44,  created_by: 'John' }, 90 * 60 * 1000);
-  pushEvent('CONFIRM_CHARGE',  '201', 'sess_t5', { charge_id: 'ch_t5', type: 'Bar',    amount: 44  }, 89 * 60 * 1000);
+  pushEvent('ROOM_CHECKIN',    '201', 'sess_t5', { guest_name: 'Oluwaseun Adeyemi' },    2 * oneHour);
+  pushEvent('ADD_CHARGE',      '201', 'sess_t5', { charge_id: 'ch_t5', type: 'Bar',    amount: 44000,  created_by: 'John' }, 90 * 60 * 1000);
+  pushEvent('CONFIRM_CHARGE',  '201', 'sess_t5', { charge_id: 'ch_t5', type: 'Bar',    amount: 44000  }, 89 * 60 * 1000);
 
   // Room 303 Checked in 4h ago — Checkout Ready
-  pushEvent('ROOM_CHECKIN',    '303', 'sess_t6', { guest_name: 'Ryan Gosling' },       4 * oneHour);
-  pushEvent('ADD_CHARGE',      '303', 'sess_t6', { charge_id: 'ch_t6', type: 'Extend', amount: 200, created_by: 'Mary' }, 3.5 * oneHour);
-  pushEvent('CONFIRM_CHARGE',  '303', 'sess_t6', { charge_id: 'ch_t6', type: 'Extend', amount: 200 }, 3.5 * oneHour - 1000);
+  pushEvent('ROOM_CHECKIN',    '303', 'sess_t6', { guest_name: 'Nnamdi Kanu' },       4 * oneHour);
+  pushEvent('ADD_CHARGE',      '303', 'sess_t6', { charge_id: 'ch_t6', type: 'Extend', amount: 200000, created_by: 'Mary' }, 3.5 * oneHour);
+  pushEvent('CONFIRM_CHARGE',  '303', 'sess_t6', { charge_id: 'ch_t6', type: 'Extend', amount: 200000 }, 3.5 * oneHour - 1000);
   pushEvent('CHECKOUT_PREVIEW','303', 'sess_t6', {},                                                30 * 60 * 1000);
 
   // Room 204 Checked in 90 min ago
-  pushEvent('ROOM_CHECKIN',    '204', 'sess_t7', { guest_name: 'Florence Pugh' },      90 * 60 * 1000);
-  pushEvent('ADD_CHARGE',      '204', 'sess_t7', { charge_id: 'ch_t7', type: 'Spa',    amount: 110, created_by: 'John' }, 75 * 60 * 1000);
-  pushEvent('CONFIRM_CHARGE',  '204', 'sess_t7', { charge_id: 'ch_t7', type: 'Spa',    amount: 110 }, 74 * 60 * 1000);
+  pushEvent('ROOM_CHECKIN',    '204', 'sess_t7', { guest_name: 'Aisha Bello' },      90 * 60 * 1000);
+  pushEvent('ADD_CHARGE',      '204', 'sess_t7', { charge_id: 'ch_t7', type: 'Spa',    amount: 110000, created_by: 'John' }, 75 * 60 * 1000);
+  pushEvent('CONFIRM_CHARGE',  '204', 'sess_t7', { charge_id: 'ch_t7', type: 'Spa',    amount: 110000 }, 74 * 60 * 1000);
 
   // Room 104 — Void audit seed
-  pushEvent('ROOM_CHECKIN',    '104', 'sess_v1', { guest_name: 'Mark Ruffalo' },       12 * oneHour);
-  pushEvent('ADD_CHARGE',      '104', 'sess_v1', { charge_id: 'ch_v1', type: 'Spa',    amount: 100, created_by: 'Mary' }, 10 * oneHour);
-  pushEvent('CONFIRM_CHARGE',  '104', 'sess_v1', { charge_id: 'ch_v1', type: 'Spa',    amount: 100 }, 10 * oneHour - 1000);
-  pushEvent('VOID_CHARGE',     '104', 'sess_v1', { charge_id: 'ch_v1', original_amount: 100, original_type: 'Spa', reason: 'Duplicate spa check-in charge', void_by: 'Admin' }, 9 * oneHour);
+  pushEvent('ROOM_CHECKIN',    '104', 'sess_v1', { guest_name: 'Yusuf Mohammed' },       12 * oneHour);
+  pushEvent('ADD_CHARGE',      '104', 'sess_v1', { charge_id: 'ch_v1', type: 'Spa',    amount: 100000, created_by: 'Mary' }, 10 * oneHour);
+  pushEvent('CONFIRM_CHARGE',  '104', 'sess_v1', { charge_id: 'ch_v1', type: 'Spa',    amount: 100000 }, 10 * oneHour - 1000);
+  pushEvent('VOID_CHARGE',     '104', 'sess_v1', { charge_id: 'ch_v1', original_amount: 100000, original_type: 'Spa', reason: 'Duplicate spa check-in charge', void_by: 'Admin' }, 9 * oneHour);
   pushEvent('CHECKOUT',        '104', 'sess_v1', {},                                                8 * oneHour);
 
   // Save all seed events

@@ -464,7 +464,7 @@ function openNewSessionDialog() {
       <div class="form-group" style="margin-bottom:16px;">
         <label>Select Room</label>
         <select id="checkin-room-select" class="form-select" style="margin-top:8px;">
-          ${vacantRooms.map(r => `<option value="${r}">Room ${r} — ${rooms[r].room_name}</option>`).join('')}
+          ${vacantRooms.map(r => `<option value="${r}">Room ${r} - ${rooms[r].room_name}</option>`).join('')}
         </select>
       </div>
       <div class="form-group" style="margin-bottom:24px;">
@@ -1432,12 +1432,12 @@ function renderStaffConsoleView(container) {
       <div class="form-group">
         <label>Quick Amount</label>
         <div class="amount-quick-picker">
-          <button class="amount-btn-pill" onclick="setConsoleAmount(20)">$20</button>
-          <button class="amount-btn-pill" onclick="setConsoleAmount(50)">$50</button>
-          <button class="amount-btn-pill" onclick="setConsoleAmount(100)">$100</button>
-          <button class="amount-btn-pill" onclick="setConsoleAmount(150)">$150</button>
+          <button class="amount-btn-pill" onclick="setConsoleAmount(20000)">₦20k</button>
+          <button class="amount-btn-pill" onclick="setConsoleAmount(50000)">₦50k</button>
+          <button class="amount-btn-pill" onclick="setConsoleAmount(100000)">₦100k</button>
+          <button class="amount-btn-pill" onclick="setConsoleAmount(150000)">₦150k</button>
         </div>
-        <input type="number" id="staff-amount-input" class="form-input" style="margin-top:12px;" placeholder="Custom amount ($)">
+        <input type="number" id="staff-amount-input" class="form-input" style="margin-top:12px;" placeholder="Custom amount (₦)">
       </div>
 
       <div class="form-group">
